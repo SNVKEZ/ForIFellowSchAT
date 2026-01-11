@@ -24,17 +24,22 @@ public class PostController {
 
     @PostMapping("/login")
     public ResponseEntity login(@RequestBody RegistrationRequestDto requestDto) {
-        if (!users.containsKey(requestDto.username())){
+        String storedPassword = users.get(requestDto.username());
+
+        if (storedPassword == null) {
             return ResponseEntity.status(401).body("not found");
-        } else if (!users.get(requestDto.username()).contains(requestDto.password())){
+        }
+
+        if (!storedPassword.equals(requestDto.password())) {
             return ResponseEntity.status(401).body("not right pass");
         }
-        UUID uuid = UUID.randomUUID();
 
+        UUID uuid = UUID.randomUUID();
         uuids.add(uuid);
 
         return ResponseEntity.ok().body("token : " + uuid);
     }
+
 
     @GetMapping("/logout")
     public ResponseEntity logout(@RequestHeader(value = "Authorization") UUID token) {
